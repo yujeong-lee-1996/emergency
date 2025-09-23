@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SSE 테스트</title>
+</head>
+<body>
+    <h1>SSE 연결 테스트</h1>
+    <div id="log"></div>
+
+    <script>
+        const log = document.getElementById('log');
+
+        function addLog(msg) {
+            const p = document.createElement('p');
+            p.textContent = new Date().toLocaleTimeString() + ': ' + msg;
+            log.appendChild(p);
+            console.log(msg);
+        }
+
+        addLog('SSE 연결 시도...');
+
+        // job_id를 수동으로 입력 (브라우저 콘솔에서 확인한 것으로)
+        const jobId = '141c1ddbdb8b'; // 실제 job_id로 바꿔주세요
+
+        const sse = new EventSource(`http://localhost:8000/events?job_id=${jobId}`);
+
+        sse.onopen = function(event) {
+            addLog('✅ SSE 연결 성공!');
+        };
+
+        sse.onmessage = function(event) {
+            addLog('📨 메시지 받음: ' + event.data);
+
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'tick' && data.boxes) {
+                    addLog(`🎯 박스 ${data.boxes.length}개 감지됨!`);
+                }
+            } catch (e) {
+                addLog('파싱 에러: ' + e.message);
+            }
+        };
+
+        sse.onerror = function(event) {
+            addLog('❌ SSE 에러 발생');
+            console.error('SSE Error:', event);
+        };
+    </script>
+</body>
+</html>

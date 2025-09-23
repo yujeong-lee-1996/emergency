@@ -1,0 +1,237 @@
+/* AlertLog.css - 알람 로그 컴포넌트 스타일 */
+
+.alert-log-container {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.alert-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.log-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.log-icon {
+  font-size: 18px;
+}
+
+.log-title h3 {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.log-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.log-count {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.clear-btn {
+  background: rgba(255, 51, 51, 0.2);
+  border: 1px solid rgba(255, 51, 51, 0.3);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clear-btn:hover {
+  background: rgba(255, 51, 51, 0.3);
+  border-color: rgba(255, 51, 51, 0.5);
+}
+
+.alert-log-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.alert-log-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.alert-log-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.alert-log-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.no-logs {
+  text-align: center;
+  padding: 30px 20px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.no-logs-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.no-logs p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid;
+  transition: all 0.3s ease;
+}
+
+.log-item.warning {
+  background: rgba(255, 193, 7, 0.1);
+  border-left-color: #ffc107;
+}
+
+.log-item.caution {
+  background: rgba(253, 126, 20, 0.1);
+  border-left-color: #fd7e14;
+}
+
+.log-item.danger {
+  background: rgba(220, 53, 69, 0.1);
+  border-left-color: #dc3545;
+}
+
+.log-item.emergency {
+  background: rgba(255, 51, 51, 0.15);
+  border-left-color: #ff3333;
+  animation: emergency-pulse 2s infinite;
+}
+
+@keyframes emergency-pulse {
+  0%, 100% {
+    background: rgba(255, 51, 51, 0.15);
+  }
+  50% {
+    background: rgba(255, 51, 51, 0.25);
+  }
+}
+
+.log-item .log-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.log-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.log-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 10px;
+}
+
+.log-state {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.log-time {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  white-space: nowrap;
+}
+
+.log-scores {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.log-score {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+}
+
+.log-score.fire {
+  background: rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.log-score.smoke {
+  background: rgba(156, 163, 175, 0.3);
+  border: 1px solid rgba(156, 163, 175, 0.5);
+}
+
+.log-score.hazard {
+  background: rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .alert-log-container {
+    padding: 15px;
+  }
+
+  .log-item {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .log-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .log-scores {
+    gap: 8px;
+  }
+
+  .log-score {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}

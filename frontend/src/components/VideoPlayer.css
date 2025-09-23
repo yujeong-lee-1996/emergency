@@ -1,0 +1,340 @@
+/* frontend/src/components/VideoPlayer.css */
+
+.manual-play-notice {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px 20px;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.notice-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-size: 14px;
+}
+
+.notice-content span {
+  font-size: 18px;
+}
+
+.notice-content p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.play-now-btn {
+  background: linear-gradient(45deg, #2563eb, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.play-now-btn:hover {
+  background: linear-gradient(45deg, #1d4ed8, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.video-player {
+  background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.video-container {
+  position: relative;
+  background: linear-gradient(45deg, #000000 0%, #111111 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  width: 100%;
+  max-height: 70vh;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.video-element {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.detection-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.video-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
+  padding: 16px 24px;
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.play-pause-btn {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  min-width: 56px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.play-pause-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.play-pause-btn:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.play-pause-btn:hover::before {
+  left: 100%;
+}
+
+.play-pause-btn:active {
+  transform: translateY(0);
+}
+
+.time-display {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #fff;
+  min-width: 100px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #444;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: height 0.2s;
+}
+
+.progress-bar:hover {
+  height: 12px;
+}
+
+.progress-filled {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff, #00d4ff);
+  border-radius: 4px;
+  transition: width 0.1s ease;
+  position: relative;
+}
+
+.progress-filled::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: white;
+  border: 2px solid #007bff;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-group label {
+  font-size: 12px;
+  color: #ccc;
+  white-space: nowrap;
+}
+
+.control-group select {
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.volume-slider {
+  width: 80px;
+  height: 4px;
+  background: #444;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sync-info {
+  text-align: center;
+  margin-top: 10px;
+  color: #888;
+  font-size: 12px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .video-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .control-group {
+    font-size: 11px;
+  }
+
+  .volume-slider {
+    width: 60px;
+  }
+
+  .time-display {
+    font-size: 12px;
+    min-width: 80px;
+  }
+}
+
+/* 상태별 컨테이너 효과 */
+.video-player {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.video-player.state-normal {
+  border-left: 5px solid #28a745;
+}
+
+.video-player.state-prefire {
+  border-left: 5px solid #ffc107;
+  box-shadow: 0 4px 20px rgba(255, 193, 7, 0.3);
+}
+
+.video-player.state-smoke {
+  border-left: 5px solid #fd7e14;
+  box-shadow: 0 4px 20px rgba(253, 126, 20, 0.4);
+}
+
+.video-player.state-fire {
+  border-left: 5px solid #dc3545;
+  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.5);
+}
+
+.video-player.state-emergency {
+  border-left: 5px solid #ff0000;
+  /* 애니메이션 제거 - 정신없는 깜빡임 방지 */
+}
+
+@keyframes emergency-container-pulse {
+  0% {
+    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 8px 40px rgba(255, 0, 0, 0.8);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.5);
+    transform: scale(1);
+  }
+}
+
+/* 화재 감지 시 비디오 컨테이너 특수 효과 */
+.video-container.fire-detected {
+  position: relative;
+}
+
+.video-container.fire-detected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 4px solid #ff3333;
+  border-radius: 8px;
+  /* 애니메이션 제거 - 정신없는 깜빡임 방지 */
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes fire-border-pulse {
+  0%, 100% {
+    border-color: #ff3333;
+    opacity: 1;
+  }
+  50% {
+    border-color: #ff6666;
+    opacity: 0.7;
+  }
+}

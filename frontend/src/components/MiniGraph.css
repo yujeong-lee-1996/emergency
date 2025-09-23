@@ -1,0 +1,116 @@
+/* MiniGraph.css - 미니 그래프 컴포넌트 스타일 */
+
+.mini-graph {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.mini-graph:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.mini-graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.graph-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.graph-icon {
+  font-size: 1.2rem;
+}
+
+.graph-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.current-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+}
+
+.graph-container {
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.graph-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.graph-stats {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.stat-item {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.stat-item.threshold {
+  color: #ff3333;
+  font-weight: 600;
+}
+
+/* 그래프 애니메이션 */
+.mini-graph .recharts-line {
+  animation: drawLine 0.8s ease-in-out;
+}
+
+@keyframes drawLine {
+  from {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .mini-graph {
+    padding: 12px;
+  }
+
+  .mini-graph-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .graph-stats {
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+  }
+
+  .current-value {
+    font-size: 1.1rem;
+  }
+}

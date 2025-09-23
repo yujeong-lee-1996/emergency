@@ -1,0 +1,41 @@
+{
+  "states": {
+    "PRE_FIRE": {
+      "smoke_threshold": 0.10,
+      "fire_threshold": 0.10,
+      "consecutive_frames": 5
+    },
+    "SMOKE_DETECTED": {
+      "smoke_threshold": 0.50,
+      "consecutive_frames": 15
+    },
+    "FIRE_GROWING": {
+      "fire_threshold": 0.60,
+      "hazard_threshold": 0.70,
+      "consecutive_frames": 15
+    },
+    "CALL_119": {
+      "hazard_threshold": 0.85,
+      "consecutive_frames": 15
+    }
+  },
+  "ema_alpha": 0.4,
+  "downgrade_frames": 6,
+  "downgrade_factor": 0.8,
+  "roi": {
+    "enabled": true,
+    "coordinates": [0.0, 0.0, 1.0, 1.0]
+  },
+  "hsv_filter": {
+    "enabled": false,
+    "h_range": [0, 60],
+    "s_min": 0.3,
+    "v_min": 0.3,
+    "min_fire_ratio": 0.02
+  },
+  "person_suppression": {
+    "enabled": true,
+    "iou_threshold": 0.5,
+    "fire_ratio_threshold": 0.20
+  }
+}

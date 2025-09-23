@@ -1,0 +1,219 @@
+<!-- frontend/index.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>Emergency 119 — 업로드 실시간 분석</title>
+<style>
+  body{font-family:system-ui, sans-serif;background:#0b1220;color:#e5e7eb;margin:0;padding:24px}
+  .card{background:#0f172a;border-radius:16px;padding:16px;box-shadow:0 6px 30px rgba(0,0,0,.3);max-width:1100px;margin:0 auto}
+  .row{display:flex;gap:16px;align-items:flex-start}
+  video{display:block;width:100%;border-radius:12px;border:1px solid #243244}
+  .panel{flex:1;background:#111827;border-radius:12px;padding:12px}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:700}
+  .ok{background:#064e3b;color:#a7f3d0}
+  .warn{background:#7c2d12;color:#fed7aa}
+  .danger{background:#7f1d1d;color:#fecaca}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .meter{background:#1f2937;border-radius:8px;padding:10px}
+  .bar{height:8px;background:#374151;border-radius:8px;margin-top:6px;overflow:hidden}
+  .fill{height:100%;background:#ef4444;width:0%}
+  .small{font-size:12px;color:#94a3b8}
+  .log{height:220px;overflow:auto;background:#0b1322;border-radius:8px;padding:8px;font-family:ui-monospace, SFMono-Regular, monospace}
+  .btn{cursor:pointer;background:#2563eb;color:white;border:none;border-radius:10px;padding:10px 14px}
+  .btn.gray{background:#374151}
+  .btn.red{background:#dc2626}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>Emergency 119 — 업로드 분석</h2>
+  <div style="display:flex;gap:8px;align-items:center;margin:8px 0">
+    <input type="file" id="file" accept="video/*"/>
+    <button class="btn" id="start">분석 시작</button>
+    <button class="btn gray" id="pause">일시정지</button>
+    <button class="btn gray" id="resume">재개</button>
+    <button class="btn red" id="stop">중지</button>
+    <span id="status" class="badge ok">대기</span>
+  </div>
+
+  <div class="row">
+    <!-- 비디오 + 캔버스(박스 오버레이) -->
+    <div style="flex:2; position:relative">
+      <video id="video" controls></video>
+      <canvas id="overlay" style="position:absolute;left:0;top:0;pointer-events:none"></canvas>
+    </div>
+
+    <!-- 우측 패널 -->
+    <div class="panel" style="flex:1">
+      <div>상태:
+        <span id="stateTag" class="badge ok">정상</span>
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="meter"><b>Fire</b>
+          <div class="bar"><div id="barFire" class="fill"></div></div>
+          <div class="small"><span id="valFire">0.0</span></div>
+        </div>
+        <div class="meter"><b>Smoke</b>
+          <div class="bar"><div id="barSmoke" class="fill" style="background:#f59e0b"></div></div>
+          <div class="small"><span id="valSmoke">0.0</span></div>
+        </div>
+        <div class="meter"><b>Hazard</b>
+          <div class="bar"><div id="barHazard" class="fill" style="background:#22c55e"></div></div>
+          <div class="small"><span id="valHazard">0.0</span></div>
+        </div>
+      </div>
+      <h4>알람 로그</h4>
+      <div id="log" class="log"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const fileEl   = document.getElementById('file');
+const video    = document.getElementById('video');
+const overlay  = document.getElementById('overlay');
+const ctx      = overlay.getContext('2d');
+const startBtn = document.getElementById('start');
+const pauseBtn = document.getElementById('pause');
+const resumeBtn= document.getElementById('resume');
+const stopBtn  = document.getElementById('stop');
+const stateTag = document.getElementById('stateTag');
+const statusSpan = document.getElementById('status');
+const logEl    = document.getElementById('log');
+const vFire = document.getElementById('valFire');
+const vSmoke= document.getElementById('valSmoke');
+const vHaz  = document.getElementById('valHazard');
+const bFire = document.getElementById('barFire');
+const bSmoke= document.getElementById('barSmoke');
+const bHaz  = document.getElementById('barHazard');
+
+let job = null;
+let sse = null;
+
+function setState(s){
+  stateTag.textContent = s;
+  stateTag.className = 'badge ' + (s==='NORMAL'?'ok' : (s==='PRE_FIRE'||s==='SMOKE_DETECTED'?'warn':'danger'));
+}
+
+function addLog(msg){
+  const t = new Date().toLocaleTimeString();
+  logEl.innerText = `[${t}] ${msg}\n` + logEl.innerText;
+}
+
+function fitCanvasToVideo(){
+  overlay.width  = video.clientWidth;
+  overlay.height = video.clientHeight;
+}
+
+// letterbox 보정 후 박스 그리기
+function drawBoxes(payload){
+  const vw = payload.img_w, vh = payload.img_h;
+  const cw = overlay.width, ch = overlay.height;
+  const scale = Math.min(cw/vw, ch/vh);
+  const dw = vw*scale, dh = vh*scale;
+  const ox = (cw - dw) / 2, oy = (ch - dh) / 2;
+
+  ctx.clearRect(0,0,cw,ch);
+  ctx.lineWidth = 2;
+  ctx.font = '12px ui-monospace, monospace';
+  payload.boxes.forEach(b=>{
+    const x1 = ox + b.x1*scale, y1 = oy + b.y1*scale;
+    const x2 = ox + b.x2*scale, y2 = oy + b.y2*scale;
+    ctx.strokeStyle = b.cls===0 ? '#ef4444' : '#f59e0b'; // Fire/Smoke
+    ctx.strokeRect(x1, y1, x2-x1, y2-y1);
+    const label = (b.cls===0?'Fire':'Smoke') + ' ' + b.conf.toFixed(2);
+    const tw = ctx.measureText(label).width + 8;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(x1, y1-16, tw, 14);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(label, x1+4, y1-4);
+  });
+}
+
+window.addEventListener('resize', fitCanvasToVideo);
+video.addEventListener('loadedmetadata', fitCanvasToVideo);
+
+// 비디오 조작과 백엔드 분석 동기화
+video.addEventListener('pause', ()=>{
+  if(job) fetch(`http://localhost:8000/jobs/${job}/control`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({cmd:'pause'})
+  });
+});
+video.addEventListener('play', ()=>{
+  if(job) fetch(`http://localhost:8000/jobs/${job}/control`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({cmd:'resume'})
+  });
+});
+
+startBtn.onclick = async () => {
+  if(!fileEl.files[0]) { alert("동영상을 선택하세요."); return; }
+  statusSpan.textContent = '업로드 중…';
+  const fd = new FormData();
+  fd.append('file', fileEl.files[0]);
+  const res = await fetch('http://localhost:8000/upload', {method:'POST', body: fd});
+  const js  = await res.json();
+  job = js.job_id;
+  video.src = 'http://localhost:8000' + js.video_url;
+  await video.play();
+  statusSpan.textContent = '분석 진행중';
+
+  if (sse) { sse.close(); }
+  sse = new EventSource(`http://localhost:8000/events?job_id=${job}`);
+  sse.onmessage = (ev) => {
+    const data = JSON.parse(ev.data);
+    if(data.type==='tick'){
+      const {fire, smoke, hazard} = data.scores;
+      vFire.textContent = fire.toFixed(2); vSmoke.textContent=smoke.toFixed(2); vHaz.textContent=hazard.toFixed(2);
+      bFire.style.width = `${Math.round(fire*100)}%`;
+      bSmoke.style.width= `${Math.round(smoke*100)}%`;
+      bHaz.style.width  = `${Math.round(hazard*100)}%`;
+      setState(data.state);
+      if (['PRE_FIRE','SMOKE_DETECTED','FIRE_GROWING','CALL_119'].includes(data.state)){
+        addLog(`${data.state} @ ${data.t.toFixed(1)}s`);
+      }
+      drawBoxes(data);
+    }else if(data.type==='end'){
+      statusSpan.textContent = '완료';
+      addLog('분석 종료');
+      ctx.clearRect(0,0,overlay.width, overlay.height);
+      sse.close();
+    }else if(data.type==='error'){
+      statusSpan.textContent = '에러';
+      addLog(`에러: ${data.error}`);
+      sse.close();
+    }
+  };
+};
+
+pauseBtn.onclick = async () => {
+  video.pause(); // 비디오 먼저 멈추고
+  if(job) await fetch(`http://localhost:8000/jobs/${job}/control`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({cmd:'pause'})
+  });
+};
+
+resumeBtn.onclick = async () => {
+  if(job) await fetch(`http://localhost:8000/jobs/${job}/control`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({cmd:'resume'})
+  });
+  await video.play();
+};
+
+stopBtn.onclick = async () => {
+  if(job) await fetch(`http://localhost:8000/jobs/${job}/control`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({cmd:'stop'})
+  });
+  if (sse) sse.close();
+  statusSpan.textContent = '중지됨';
+  addLog('분석 중지');
+  ctx.clearRect(0,0,overlay.width, overlay.height);
+};
+</script>
+</body>
+</html>

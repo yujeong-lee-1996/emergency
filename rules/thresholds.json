@@ -1,0 +1,15 @@
+{
+  "ema_alpha": 0.4,
+  "color_gate": { "p_min": 0.08, "p_min_person_overlap": 0.20 },
+  "weights": { "s_smoke": 0.6, "s_fire": 0.8, "growth": 0.4 },
+  "fps_target": 5,
+  "promote_seconds": 5,
+  "demote_seconds": 2,
+  "thresholds": {
+    "pre_fire":        { "smoke": 0.30, "fire": 0.25 },
+    "smoke_detected":  { "smoke": 0.50 },
+    "fire_growing":    { "fire": 0.60, "hazard": 0.70 },
+    "call_119":        { "hazard": 0.85 }
+  },
+  "hysteresis_factor": 0.8
+}

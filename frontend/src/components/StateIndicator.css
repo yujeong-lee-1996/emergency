@@ -1,0 +1,551 @@
+/* StateIndicator.css - 상태 표시기 컴포넌트 스타일 */
+
+.state-indicator-main {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.state-indicator-main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #28a745, #ffc107, #fd7e14, #dc3545, #ff3333);
+  opacity: 0.3;
+}
+
+.state-indicator-main.emergency {
+  animation: emergency-glow 1s infinite;
+}
+
+@keyframes emergency-glow {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(255, 51, 51, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 40px rgba(255, 51, 51, 0.6);
+  }
+}
+
+/* 간단한 상태 표시 스타일 */
+.state-header-simple {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.state-icon-simple {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.state-title-simple {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 간단한 점수 표시 스타일 */
+.scores-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.score-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 60px;
+  align-items: center;
+  gap: 12px;
+}
+
+.score-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.score-bar-simple {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.score-fill-simple {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.score-fill-simple.fire {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.score-fill-simple.smoke {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.score-fill-simple.hazard {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.score-value-simple {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  text-align: right;
+}
+
+/* 간단한 긴급 버튼 */
+.emergency-simple {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.call-119-btn-simple {
+  width: 100%;
+  background: linear-gradient(45deg, #dc3545, #ff3333);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+.call-119-btn-simple:hover {
+  background: linear-gradient(45deg, #c82333, #e60000);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.state-header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.state-icon-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.state-icon {
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 2;
+}
+
+.state-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: pulse 2s infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.state-info {
+  flex: 1;
+}
+
+.state-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(45deg, #ffffff, #e3e3e3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.state-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.threat-level {
+  display: flex;
+  align-items: center;
+}
+
+.threat-badge {
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.threat-badge.minimal {
+  background: linear-gradient(45deg, #28a745, #20c997);
+}
+
+.threat-badge.low {
+  background: linear-gradient(45deg, #17a2b8, #20c997);
+}
+
+.threat-badge.medium {
+  background: linear-gradient(45deg, #ffc107, #ffb347);
+}
+
+.threat-badge.high {
+  background: linear-gradient(45deg, #fd7e14, #ff9f40);
+}
+
+.threat-badge.critical {
+  background: linear-gradient(45deg, #dc3545, #ff3333);
+  animation: critical-pulse 1s infinite;
+}
+
+@keyframes critical-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.7);
+  }
+}
+
+.scores-section {
+  margin-bottom: 30px;
+}
+
+.scores-title {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.score-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.score-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  transition: all 0.3s ease;
+}
+
+.score-item.fire::before {
+  background: linear-gradient(90deg, #ff3333, #ff6b6b);
+}
+
+.score-item.smoke::before {
+  background: linear-gradient(90deg, #666666, #888888);
+}
+
+.score-item.hazard::before {
+  background: linear-gradient(90deg, #ff6600, #ff9f40);
+}
+
+.score-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.score-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.score-icon {
+  font-size: 1.5rem;
+}
+
+.score-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-value {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.score-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.score-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: score-shimmer 2s infinite;
+}
+
+@keyframes score-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.score-fill.fire {
+  background: linear-gradient(90deg, #ff3333, #ff6b6b);
+}
+
+.score-fill.smoke {
+  background: linear-gradient(90deg, #666666, #888888);
+}
+
+.score-fill.hazard {
+  background: linear-gradient(90deg, #ff6600, #ff9f40);
+}
+
+.emergency-actions {
+  background: rgba(255, 51, 51, 0.1);
+  border: 2px solid rgba(255, 51, 51, 0.3);
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  animation: emergency-flash 2s infinite;
+}
+
+@keyframes emergency-flash {
+  0%, 100% {
+    border-color: rgba(255, 51, 51, 0.3);
+    background: rgba(255, 51, 51, 0.1);
+  }
+  50% {
+    border-color: rgba(255, 51, 51, 0.6);
+    background: rgba(255, 51, 51, 0.2);
+  }
+}
+
+.emergency-message h3 {
+  color: #ff3333;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.emergency-message ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.emergency-message li {
+  color: white;
+  padding: 8px 0;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.emergency-message li:last-child {
+  border-bottom: none;
+}
+
+.emergency-button {
+  text-align: center;
+}
+
+.call-119-btn {
+  background: linear-gradient(45deg, #ff3333, #ff0000);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 51, 51, 0.4);
+  transition: all 0.3s ease;
+  animation: call-pulse 1.5s infinite;
+}
+
+@keyframes call-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(255, 51, 51, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 51, 51, 0.6);
+  }
+}
+
+.call-119-btn:hover {
+  background: linear-gradient(45deg, #ff0000, #cc0000);
+  transform: scale(1.1);
+}
+
+.monitoring-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff88;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.3;
+  }
+}
+
+.timestamp {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-family: 'Courier New', monospace;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .state-indicator-main {
+    padding: 20px;
+  }
+
+  .state-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .state-title {
+    font-size: 1.5rem;
+  }
+
+  .scores-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .monitoring-status {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+}
