@@ -131,13 +131,8 @@ npm start
 - **PRE_FIRE**: 화재 8%, 연기 10%
 - **SMOKE_DETECTED**: 연기 25%
 - **FIRE_GROWING**: 화재 30%, 위험도 35%
-- **CALL_119**: 위험도 45%
+- **CALL_119**: 위험도 45% -> 이메일 알림 전송기능 
 
-### 대안 임계치 (app.py)
-- **PRE_FIRE**: 화재 25%, 연기 30%
-- **SMOKE_DETECTED**: 연기 50%
-- **FIRE_GROWING**: 화재 60%, 위험도 70%
-- **CALL_119**: 위험도 85%
 
 임계치는 각 파일의 `RULES["thresholds"]`에서 조정 가능합니다.
 
