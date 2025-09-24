@@ -14,19 +14,30 @@
 
 ```
 ├── backend/                 # FastAPI 서버
-│   ├── main.py             # API 엔드포인트
-│   ├── detectors/
-│   │   └── vision.py       # YOLO 화재/연기 감지
-│   ├── state_machine.py    # 상태 전이 로직
-│   ├── utils.py           # 알림 발송 유틸리티
-│   └── test_system.py     # 시스템 테스트
+│   ├── main.py             # 기본 API 서버 (고급 감지 로직)
+│   ├── detectors/          # 감지 모듈
+│   │   └── __init__.py
+│   ├── requirements.txt    # Python 의존성
+│   └── thresholds.json     # 감지 임계치 설정
+├── app.py                  # 대안 서버 (간단한 버전)
 ├── frontend/               # React 웹 인터페이스
-│   └── src/
-│       ├── App.js         # 메인 앱
-│       └── components/    # UI 컴포넌트
+│   ├── src/
+│   │   ├── App.js         # 메인 앱
+│   │   └── components/    # UI 컴포넌트들
+│   │       ├── StateIndicator.js    # 실시간 상태 표시
+│   │       ├── AlertLog.js          # 알람 히스토리
+│   │       ├── VideoUpload.js       # 영상 업로드
+│   │       ├── VideoPlayer.js       # 영상 재생
+│   │       └── Timeline.js          # 분석 타임라인
+│   ├── package.json       # Node.js 의존성
+│   └── build/             # 빌드 출력
 ├── rules/                 # 엔진 규칙 정의
-├── models/vision/         # AI 모델 저장소
-└── media/                 # 업로드/스냅샷 저장
+├── models/                # AI 모델 저장소 (없으면 자동 다운로드)
+├── media/                 # 업로드/스냅샷 저장
+│   ├── uploads/           # 업로드된 영상
+│   └── snap/              # 감지 스냅샷
+├── .env                   # 환경 설정
+└── test_*.py              # 테스트 스크립트들
 ```
 
 ## 🚀 설치 및 실행
@@ -70,11 +81,19 @@ CONFIDENCE_THRESHOLD=0.25
 
 ### 3. 서버 실행
 
-#### Backend 실행
+#### Backend 실행 (옵션 선택)
+
+**기본 서버 (고급 감지 로직):**
 ```bash
 cd backend
 python main.py
 ```
+
+**간단한 서버 (빠른 테스트용):**
+```bash
+python app.py
+```
+
 서버가 http://localhost:8000 에서 실행됩니다.
 
 #### Frontend 실행
@@ -96,8 +115,8 @@ npm start
 - 타임라인과 그래프로 진행 상황 확인
 
 ### 3. 알림 수신
-- CALL_119 상태 진입 시 자동 알림 발송
-- 브라우저 알림 + Slack/Email (설정 시)
+- CALL_119 상태 진입 시 119 호출 버튼 표시
+- 브라우저 화면에서 긴급 상황 시각적 알림
 
 ## 🔧 상태 및 임계치
 
@@ -108,26 +127,29 @@ npm start
 4. **FIRE_GROWING** (화재 확산) - 화재 진행 중
 5. **CALL_119** (긴급 호출) - 즉시 신고 필요
 
-### 기본 임계치
-- 화재 점수: 25% (전조), 60% (확산)
-- 연기 점수: 30% (감지), 50% (확인)
-- 위험도: 85% (119 호출)
+### 기본 임계치 (backend/main.py)
+- **PRE_FIRE**: 화재 8%, 연기 10%
+- **SMOKE_DETECTED**: 연기 25%
+- **FIRE_GROWING**: 화재 30%, 위험도 35%
+- **CALL_119**: 위험도 45%
 
-임계치는 `backend/thresholds.json`에서 조정 가능합니다.
+### 대안 임계치 (app.py)
+- **PRE_FIRE**: 화재 25%, 연기 30%
+- **SMOKE_DETECTED**: 연기 50%
+- **FIRE_GROWING**: 화재 60%, 위험도 70%
+- **CALL_119**: 위험도 85%
+
+임계치는 각 파일의 `RULES["thresholds"]`에서 조정 가능합니다.
 
 ## 🧪 테스트
 
-시스템 기능 검증을 위한 자동화된 테스트:
+시스템 기능 검증을 위한 테스트 스크립트:
 
 ```bash
-cd backend
-python test_system.py
+python test_detection.py    # 감지 기능 테스트
+python quick_test.py        # 빠른 시스템 검증
+python create_test_video.py # 테스트용 영상 생성
 ```
-
-테스트는 다음 시나리오를 포함합니다:
-- 화재 진행 시나리오 (정상 → 119 호출)
-- 오탐 방지 테스트 (Person 억제)
-- 정상 활동 테스트
 
 ## 📊 API 엔드포인트
 
@@ -213,9 +235,9 @@ python test_system.py
 - 브라우저 새로고침 후 재연결
 - 방화벽/프록시 설정 확인
 
-### 알림 발송 실패
-- `.env` 파일의 Slack/SMTP 설정 확인
-- 네트워크 연결 및 인증 정보 검증
+### 브라우저 알림 미동작
+- 브라우저 알림 권한 허용 확인
+- HTTPS 환경에서 사용 권장
 
 ## 📝 개발 참고사항
 
@@ -225,9 +247,10 @@ python test_system.py
 - 연속 프레임 조건으로 오탐 방지
 
 ### 확장 가능성
-- 커스텀 모델 교체 가능
-- 추가 알림 채널 구현
-- 다중 카메라 지원
+- YOLO 모델 교체 (models/ 폴더에 .pt 파일 추가)
+- 이메일/Slack 알림 시스템 추가 가능
+- 실시간 웹캠 스트리밍 지원 확장
+- 다중 영상 동시 분석 지원
 
 ## 📄 라이선스
 

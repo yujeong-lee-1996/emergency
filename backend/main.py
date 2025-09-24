@@ -14,6 +14,7 @@ from datetime import datetime
 from typing import Dict, Any, AsyncGenerator
 from pydantic import BaseModel
 from ultralytics import YOLO
+from email_notifier import EmailNotifier
 
 # 경로 설정
 ROOT = Path(__file__).resolve().parent.parent
@@ -43,6 +44,7 @@ def load_model() -> YOLO:
     return YOLO('yolo11n.pt')
 
 MODEL = load_model()
+EMAIL_NOTIFIER = EmailNotifier()
 
 # 모델 클래스 정보 출력
 try:
@@ -233,6 +235,32 @@ async def test_endpoint():
     """테스트 엔드포인트"""
     return {"message": "API is working", "jobs": list(JOBS.keys())}
 
+class EmailRequest(BaseModel):
+    job_id: str
+    scores: dict
+    timestamp: float = None
+
+@app.post("/send-emergency-email")
+async def send_emergency_email(request: EmailRequest):
+    """119 호출 버튼 클릭 시 긴급 이메일 발송"""
+    try:
+        print(f"🚨 EMERGENCY EMAIL REQUEST: {request.job_id}")
+
+        success = EMAIL_NOTIFIER.send_emergency_alert(
+            job_id=request.job_id,
+            scores=request.scores,
+            timestamp=request.timestamp
+        )
+
+        if success:
+            return {"success": True, "message": "긴급 알림 이메일이 발송되었습니다."}
+        else:
+            raise HTTPException(status_code=500, detail="이메일 발송에 실패했습니다.")
+
+    except Exception as e:
+        print(f"❌ 이메일 발송 API 오류: {e}")
+        raise HTTPException(status_code=500, detail=f"이메일 발송 실패: {str(e)}")
+
 @app.post("/jobs/{job_id}/restart")
 async def restart_analysis(job_id: str, background_tasks: BackgroundTasks):
     """기존 영상 재분석"""
@@ -303,6 +331,7 @@ async def process_video_job(job_id: str, path: Path):
         frame_idx = -1
         S_ema = F_ema = prev_S = prev_F = 0.0
         state = "NORMAL"
+        last_state = "NORMAL"
         pause_started = None
         processed_frames = 0
 
@@ -432,6 +461,9 @@ async def process_video_job(job_id: str, path: Path):
 
             # 이벤트 push (SSE)
             t_video = frame_idx / fps
+
+            # 상태 변화 추적만 (이메일은 버튼 클릭 시 별도 API로 발송)
+            last_state = state
             event_data = {
                 "type": "tick",
                 "job_id": job_id,

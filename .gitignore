@@ -101,7 +101,7 @@ logs/
 .temp/
 .tmp/
 
-# Environment Variables (keep template, ignore actual values)
+# Environment Variables (keep template,  actual values)
 .env.local
 .env.production
 
@@ -119,3 +119,4 @@ datasets/
 *.json.bak
 *.db
 *.sqlite
+*.txt

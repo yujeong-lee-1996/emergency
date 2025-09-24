@@ -2,7 +2,7 @@
 import React from 'react';
 import './StateIndicator.css';
 
-const StateIndicator = ({ currentState, scores }) => {
+const StateIndicator = ({ currentState, scores, jobId, timestamp }) => {
   const getStateInfo = (state) => {
     switch (state) {
       case 'NORMAL':
@@ -77,6 +77,43 @@ const StateIndicator = ({ currentState, scores }) => {
     return `${(score * 100).toFixed(1)}%`;
   };
 
+  const handleEmergencyCall = async () => {
+    try {
+      // 첫 번째: 119 전화 걸기
+      // window.open('tel:119');
+
+      // 두 번째: 이메일 발송 API 호출
+      if (jobId) {
+        console.log('🚨 이메일 발송 요청:', { jobId, scores, timestamp });
+
+        const response = await fetch('http://localhost:8000/send-emergency-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            job_id: jobId,
+            scores: scores,
+            timestamp: timestamp
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          alert('✅ ' + result.message);
+          console.log('✅ 이메일 발송 성공');
+        } else {
+          const errorData = await response.json();
+          alert('❌ 이메일 발송 실패: ' + errorData.detail);
+          console.error('❌ 이메일 발송 실패:', errorData);
+        }
+      }
+    } catch (error) {
+      console.error('❌ 긴급 호출 처리 오류:', error);
+      alert('❌ 이메일 발송 중 오류가 발생했습니다: ' + error.message);
+    }
+  };
+
   return (
     <div className={`state-indicator-main ${stateInfo.priority}`}>
       {/* 간단한 상태 표시 */}
@@ -128,9 +165,9 @@ const StateIndicator = ({ currentState, scores }) => {
         <div className="emergency-simple">
           <button
             className="call-119-btn-simple"
-            onClick={() => window.open('tel:119')}
+            onClick={handleEmergencyCall}
           >
-            📞 119 호출
+            📞 119 호출 + 알림
           </button>
         </div>
       )}

@@ -362,6 +362,8 @@ function App() {
                     <StateIndicator
                       currentState={currentData.state}
                       scores={currentData.scores}
+                      jobId={jobId}
+                      timestamp={currentData.timestamp}
                     />
 
                     <AlertLog
